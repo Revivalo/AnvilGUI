@@ -33,6 +33,7 @@
         <module>1_16_R1</module>
         <module>1_16_R2</module>
         <module>1_16_R3</module>
+        <module>1_17_R1</module>
     </modules>
 
     <repositories>
@@ -40,6 +41,10 @@
             <id>nms-repo</id>
             <url>https://repo.codemc.org/repository/nms/</url>
         </repository>
+     		<repository>
+			<id>spaceio-repo</id>
+			<url>https://repo.spaceio.xyz/repository/maven-public/</url>
+		</repository>
     </repositories>
 
     <build>
@@ -76,15 +81,17 @@
         </pluginManagement>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>codemc-releases</id>
-            <url>https://repo.codemc.io/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>codemc-snapshots</id>
-            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>spaceio-releases</id>
+			<name>releases</name>
+			<url>https://repo.spaceio.xyz/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>spaceio-snapshots</id>
+			<name>snapshots</name>
+			<url>https://repo.spaceio.xyz/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
