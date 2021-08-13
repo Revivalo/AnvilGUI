@@ -19,12 +19,12 @@ AnvilGUI requires the usage of Maven or a Maven compatible build system.
 <dependency>
     <groupId>net.wesjd</groupId>
     <artifactId>anvilgui</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.3-SNAPSHOT</version>
 </dependency>
 
 <repository>
-    <id>codemc-snapshots</id>
-    <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+	<id>spaceio-repo</id>
+	<url>https://repo.spaceio.xyz/repository/maven-snapshots/</url>
 </repository>
 ```
 
