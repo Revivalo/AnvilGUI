@@ -39,6 +39,7 @@
         <module>1_18_R2</module>
         <module>1_19_R1</module>
         <module>1_19_1_R1</module>
+        <module>1_19_R2</module>
     </modules>
 
     <repositories>
@@ -53,30 +54,7 @@
          to install -->
         <defaultGoal>clean install</defaultGoal>
         <plugins>
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.22.8</version>
-                <inherited>false</inherited> <!-- Only need to run once for the whole project -->
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>compile</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <java>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <palantirJavaFormat/>
-                        <removeUnusedImports/>
-                        <importOrder/>
-                    </java>
-                </configuration>
-            </plugin>
+
         </plugins>
         <pluginManagement>
             <plugins>
