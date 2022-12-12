@@ -4,6 +4,8 @@ package net.wesjd.anvilgui;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
 import net.wesjd.anvilgui.version.VersionMatcher;
 import net.wesjd.anvilgui.version.VersionWrapper;
 import net.wesjd.anvilgui.version.Wrapper1_7_R4;
@@ -13,6 +15,7 @@ import net.wesjd.anvilgui.version.Wrapper1_8_R3;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
@@ -25,8 +28,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
@@ -76,6 +81,10 @@ public class AnvilGUI {
      * An {@link BiFunction} that is called when the {@link Slot#OUTPUT} slot has been clicked
      */
     private final BiFunction<Player, String, Response> completeFunction;
+    /**
+     * An {@link BiFunction} that is called when the string of the anvil input has been changed.
+     */
+    private final BiFunction<Player, String, Response> prepareListener;
 
     /**
      * An {@link Consumer} that is called when the {@link Slot#INPUT_LEFT} slot has been clicked
@@ -85,10 +94,6 @@ public class AnvilGUI {
      * An {@link Consumer} that is called when the {@link Slot#INPUT_RIGHT} slot has been clicked
      */
     private final Consumer<Player> inputRightClickListener;
-    /**
-     * An {@link BiConsumer} that is called when the string of the anvil input has been changed.
-     */
-    private final BiConsumer<Player, String> prepareListener;
 
     /**
      * The container id of the inventory, used for NMS methods
@@ -154,7 +159,7 @@ public class AnvilGUI {
             Consumer<Player> closeListener,
             Consumer<Player> inputLeftClickListener,
             Consumer<Player> inputRightClickListener,
-            BiConsumer<Player, String> prepareListener,
+            BiFunction<Player, String, Response> prepareListener,
             BiFunction<Player, String, Response> completeFunction) {
         this.plugin = plugin;
         this.player = player;
@@ -176,6 +181,11 @@ public class AnvilGUI {
             ItemMeta paperMeta = this.inputLeft.getItemMeta();
             paperMeta.setDisplayName(itemText);
             this.inputLeft.setItemMeta(paperMeta);
+            
+//            this.inputRight = new ItemStack(Material.ENCHANTED_BOOK);
+//            EnchantmentStorageMeta meta = (EnchantmentStorageMeta) this.inputRight.getItemMeta();
+//            meta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, false);
+//            this.inputRight.setItemMeta(meta);
         }
 
         openInventory();
@@ -236,6 +246,27 @@ public class AnvilGUI {
             closeListener.accept(player);
         }
     }
+    
+    public void updateTitle(String inventoryTitle) {
+    	this.inventoryTitle = inventoryTitle;
+    	ItemMeta meta = this.inputLeft.getItemMeta();
+    	String original = meta.getDisplayName();
+    	if(this.inventory.getItem(Slot.OUTPUT) != null) {
+    		
+    		meta.setDisplayName(this.inventory.getItem(Slot.OUTPUT).getItemMeta().getDisplayName());
+    		this.inputLeft.setItemMeta(meta);
+    		this.inventory.setItem(Slot.INPUT_LEFT, inputLeft);
+    	}
+    	
+//    	ItemStack stack2 = this.inputLeft.clone();
+//    	ItemMeta meta2 = this.inputLeft.getItemMeta();
+//    	meta2.setDisplayName(inventoryTitle + "e");
+//    	stack2.setItemMeta(meta2);
+//    	this.inventory.setItem(Slot.OUTPUT, stack2);
+    	WRAPPER.sendPacketOpenWindow(player, containerId, inventoryTitle);
+    	
+        open = true;
+    }
 
     /**
      * Returns the Bukkit inventory for this anvil gui
@@ -270,9 +301,12 @@ public class AnvilGUI {
                                         Player player =
                                                 (Player) prepareEvent.getView().getPlayer();
                                         if (prepareListener != null) {
-                                            prepareListener.accept(
+                                            Response response = prepareListener.apply(
                                                     player,
                                                     prepareEvent.getInventory().getRenameText());
+
+                                            response.execute(AnvilGUI.this, prepareEvent.getResult(), inventory, player);
+
                                         }
                                     }
                                 }
@@ -290,8 +324,10 @@ public class AnvilGUI {
         public void onInventoryClick(InventoryClickEvent event) {
             if (event.getInventory().equals(inventory)
                     && (event.getRawSlot() < 3 || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) {
+            	
                 event.setCancelled(true);
                 final Player clicker = (Player) event.getWhoClicked();
+                
                 if (event.getRawSlot() == Slot.OUTPUT) {
                     final ItemStack clicked = inventory.getItem(Slot.OUTPUT);
                     if (clicked == null || clicked.getType() == Material.AIR) return;
@@ -299,16 +335,7 @@ public class AnvilGUI {
                     final Response response = completeFunction.apply(
                             clicker,
                             clicked.hasItemMeta() ? clicked.getItemMeta().getDisplayName() : "");
-                    if (response.getText() != null) {
-                        final ItemMeta meta = clicked.getItemMeta();
-                        meta.setDisplayName(response.getText());
-                        clicked.setItemMeta(meta);
-                        inventory.setItem(Slot.INPUT_LEFT, clicked);
-                    } else if (response.getInventoryToOpen() != null) {
-                        clicker.openInventory(response.getInventoryToOpen());
-                    } else {
-                        closeInventory();
-                    }
+                    response.execute(AnvilGUI.this, clicked, event.getInventory(), clicker); 
                 } else if (event.getRawSlot() == Slot.INPUT_LEFT) {
                     if (inputLeftClickListener != null) {
                         inputLeftClickListener.accept(player);
@@ -366,13 +393,13 @@ public class AnvilGUI {
          */
         private Consumer<Player> inputRightClickListener;
         /**
-         * An {@link BiConsumer} that is called when the string of the anvil input has been changed
-         */
-        private BiConsumer<Player, String> prepareListener;
-        /**
          * An {@link BiFunction} that is called when the anvil output slot has been clicked
          */
         private BiFunction<Player, String, Response> completeFunction;
+        /**
+         * An {@link BiFunction} that is called when the string of the anvil input has been changed
+         */
+        private BiFunction<Player, String, Response> prepareListener;
         /**
          * The {@link Plugin} that this anvil GUI is associated with
          */
@@ -445,7 +472,7 @@ public class AnvilGUI {
          * @param prepareListener An {@link BiConsumer} that is called when the string of the input field is changed
          * @return The {@link Builder} instance
          */
-        public Builder onPrepare(BiConsumer<Player, String> prepareListener) {
+        public Builder onPrepare(BiFunction<Player, String, Response> prepareListener) {
             this.prepareListener = prepareListener;
             return this;
         }
@@ -577,18 +604,44 @@ public class AnvilGUI {
         private final String text;
 
         private final Inventory openInventory;
+        
+        /*
+         * The new inventory title
+         */
+        private final String inventoryTitle;
 
         /**
          * Creates a response to the user's input
          *
          * @param text The text that is to be displayed to the user, which can be null to close the inventory
          */
-        private Response(String text, Inventory openInventory) {
+        private Response(String text, Inventory openInventory, String inventoryTitle) {
             this.text = text;
             this.openInventory = openInventory;
+            this.inventoryTitle = inventoryTitle;
         }
 
-        /**
+        public void execute(AnvilGUI anvilGUI, ItemStack item, Inventory inventory, Player clickerPlayer) {
+        	if (this.getText() != null) {
+                final ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(this.getText());
+                item.setItemMeta(meta);
+                inventory.setItem(Slot.INPUT_LEFT, item);
+            } else if (this.getInventoryToOpen() != null) {
+            	clickerPlayer.openInventory(this.getInventoryToOpen());
+            } else if (this.getTitle() != null) {
+            	// only update title when they are different to avoid cycles (it calls the prepareEvent again)
+            	if(!anvilGUI.inventoryTitle.equals(this.getTitle())) {
+            		
+            		anvilGUI.updateTitle(this.getTitle());
+            		
+            	}
+            } else {
+            	anvilGUI.closeInventory();
+            }
+		}
+
+		/**
          * Gets the text that is to be displayed to the user
          *
          * @return The text that is to be displayed to the user
@@ -605,6 +658,10 @@ public class AnvilGUI {
         public Inventory getInventoryToOpen() {
             return openInventory;
         }
+        
+        public String getTitle() {
+        	return inventoryTitle;
+        }
 
         /**
          * Returns an {@link Response} object for when the anvil GUI is to close
@@ -612,7 +669,7 @@ public class AnvilGUI {
          * @return An {@link Response} object for when the anvil GUI is to close
          */
         public static Response close() {
-            return new Response(null, null);
+            return new Response(null, null, null);
         }
 
         /**
@@ -622,7 +679,11 @@ public class AnvilGUI {
          * @return An {@link Response} object for when the anvil GUI is to display text to the user
          */
         public static Response text(String text) {
-            return new Response(text, null);
+            return new Response(text, null, null);
+        }
+        
+        public static Response title(String inventoryTitle) {
+        	return new Response(null, null, inventoryTitle);
         }
 
         /**
@@ -632,7 +693,7 @@ public class AnvilGUI {
          * @return The {@link Response} to return
          */
         public static Response openInventory(Inventory inventory) {
-            return new Response(null, inventory);
+            return new Response(null, inventory, null);
         }
     }
 
