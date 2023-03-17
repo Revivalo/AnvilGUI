@@ -6,7 +6,7 @@
 
     <groupId>net.wesjd</groupId>
     <artifactId>anvilgui-parent</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -90,15 +90,17 @@
         </pluginManagement>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>codemc-releases</id>
-            <url>https://repo.codemc.io/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>codemc-snapshots</id>
-            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>spaceio-releases</id>
+			<name>releases</name>
+			<url>https://repo.spaceio.xyz/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>spaceio-snapshots</id>
+			<name>snapshots</name>
+			<url>https://repo.spaceio.xyz/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
