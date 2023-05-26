@@ -16,6 +16,7 @@
     <modules>
         <module>api</module>
         <module>abstraction</module>
+        <module>reflection</module>
         <module>1_7_R4</module>
         <module>1_8_R1</module>
         <module>1_8_R2</module>
@@ -48,6 +49,10 @@
             <id>nms-repo</id>
             <url>https://repo.codemc.org/repository/nms/</url>
         </repository>
+        <repository>
+            <id>spaceio-repo</id>
+            <url>https://repo.spaceio.xyz/repository/maven-public/</url>
+		</repository>
     </repositories>
 
     <build>

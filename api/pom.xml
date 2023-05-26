@@ -175,6 +175,11 @@
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+        	<groupId>net.wesjd</groupId>
+        	<artifactId>anvilgui-reflection</artifactId>
+        	<version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

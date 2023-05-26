@@ -610,15 +610,21 @@ public class AnvilGUI {
          */
         private final String inventoryTitle;
 
+        /*
+         * Runnable for custom function
+         */
+        private final Runnable runnable;
+
         /**
          * Creates a response to the user's input
          *
          * @param text The text that is to be displayed to the user, which can be null to close the inventory
          */
-        private Response(String text, Inventory openInventory, String inventoryTitle) {
+        private Response(String text, Inventory openInventory, String inventoryTitle, Runnable runnable) {
             this.text = text;
             this.openInventory = openInventory;
             this.inventoryTitle = inventoryTitle;
+            this.runnable = runnable;
         }
 
         public void execute(AnvilGUI anvilGUI, ItemStack item, Inventory inventory, Player clickerPlayer) {
@@ -636,7 +642,10 @@ public class AnvilGUI {
             		anvilGUI.updateTitle(this.getTitle());
             		
             	}
-            } else {
+            } else if (this.runnable != null) {
+                this.runnable.run();
+            }
+            else {
             	anvilGUI.closeInventory();
             }
 		}
@@ -669,7 +678,7 @@ public class AnvilGUI {
          * @return An {@link Response} object for when the anvil GUI is to close
          */
         public static Response close() {
-            return new Response(null, null, null);
+            return new Response(null, null, null, null);
         }
 
         /**
@@ -679,11 +688,11 @@ public class AnvilGUI {
          * @return An {@link Response} object for when the anvil GUI is to display text to the user
          */
         public static Response text(String text) {
-            return new Response(text, null, null);
+            return new Response(text, null, null, null);
         }
         
         public static Response title(String inventoryTitle) {
-        	return new Response(null, null, inventoryTitle);
+        	return new Response(null, null, inventoryTitle, null);
         }
 
         /**
@@ -693,7 +702,11 @@ public class AnvilGUI {
          * @return The {@link Response} to return
          */
         public static Response openInventory(Inventory inventory) {
-            return new Response(null, inventory, null);
+            return new Response(null, inventory, null, null);
+        }
+
+        public static Response run(Runnable runnable) {
+            return new Response(null, null, null, runnable);
         }
     }
 
