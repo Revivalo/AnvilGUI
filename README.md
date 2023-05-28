@@ -1,4 +1,4 @@
-# AnvilGUI [![Build Status](https://ci.codemc.io/job/WesJD/job/AnvilGUI/badge/icon)](https://ci.codemc.io/job/WesJD/job/AnvilGUI/)
+# AnvilGUI [![Build Status](https://ci.spaceio.xyz:443/job/AnvilGUI/badge/icon?style=flat-square)](https://ci.spaceio.xyz:443/job/AnvilGUI/)
 Easily use anvil guis to get a user's input.
 
 This project was made since there is no way to prompt users with an anvil input with the Spigot / Bukkit API. It requires interaction with NMS and that is a pain in plugins where users have different versions of the server running.
@@ -19,12 +19,12 @@ AnvilGUI requires the usage of Maven or a Maven compatible build system.
 <dependency>
     <groupId>net.wesjd</groupId>
     <artifactId>anvilgui</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.6-SNAPSHOT</version>
 </dependency>
 
 <repository>
-    <id>codemc-snapshots</id>
-    <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+    <id>spaceio-snapshots</id>
+    <url>https://repo.spaceio.xyz/repository/maven-snapshots/</url>
 </repository>
 ```
 
