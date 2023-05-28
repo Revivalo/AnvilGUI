@@ -3,6 +3,8 @@ package net.wesjd.anvilgui.version;
 
 import org.bukkit.Bukkit;
 
+import net.wesjd.anvilgui.reflection.ReflectionWrapper;
+
 /**
  * Matches the server's NMS version to its {@link VersionWrapper}
  *
@@ -31,8 +33,13 @@ public class VersionMatcher {
             throw new IllegalStateException(
                     "Failed to instantiate version wrapper for version " + serverVersion, exception);
         } catch (ClassNotFoundException exception) {
-            throw new IllegalStateException(
-                    "AnvilGUI does not support server version \"" + serverVersion + "\"", exception);
+        	try {
+        		return new ReflectionWrapper(serverVersion);
+        	} catch(Exception e) {
+                throw new IllegalStateException(
+                        "AnvilGUI does not support server version \"" + serverVersion + "\"", e);
+            }
         }
     }
+
 }
