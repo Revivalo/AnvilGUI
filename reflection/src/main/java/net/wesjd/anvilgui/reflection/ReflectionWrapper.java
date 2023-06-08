@@ -6,6 +6,7 @@ import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.game.PacketPlayOutCloseWindow;
 import net.minecraft.network.protocol.game.PacketPlayOutOpenWindow;
 import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.world.IInventory;
 import net.minecraft.world.entity.player.EntityHuman;
 import net.minecraft.world.entity.player.PlayerInventory;
@@ -38,6 +39,8 @@ public final class ReflectionWrapper implements VersionWrapper {
     private final Class<?> classCraftEventFactory;
     private final Method methodHandleInventoryCloseEvent;
 
+    private final Field fieldEntityPlayerGetConnection;
+
 
 	public ReflectionWrapper(String serverVersion) throws ClassNotFoundException, NoSuchMethodException {
 		this.fieldContainer = Arrays.asList(EntityHuman.class.getDeclaredFields())
@@ -61,6 +64,9 @@ public final class ReflectionWrapper implements VersionWrapper {
 
         this.classCraftEventFactory = Class.forName("org.bukkit.craftbukkit." + serverVersion + ".event.CraftEventFactory");
         this.methodHandleInventoryCloseEvent = this.classCraftEventFactory.getDeclaredMethod("handleInventoryCloseEvent", EntityHuman.class);
+
+        this.fieldEntityPlayerGetConnection = Arrays.stream(EntityPlayer.class.getDeclaredFields())
+                .filter(field -> field.getType() == PlayerConnection.class).findFirst().get();
 
 		
 	}
@@ -99,12 +105,22 @@ public final class ReflectionWrapper implements VersionWrapper {
 
     @Override
     public void sendPacketOpenWindow(Player player, int containerId, String inventoryTitle) {
-        toNMS(player).b.a(new PacketPlayOutOpenWindow(containerId, Containers.h, IChatBaseComponent.a(inventoryTitle)));
+        try {
+            PlayerConnection playerConnection = (PlayerConnection) fieldEntityPlayerGetConnection.get(toNMS(player));
+            playerConnection.a(new PacketPlayOutOpenWindow(containerId, Containers.h, IChatBaseComponent.a(inventoryTitle)));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void sendPacketCloseWindow(Player player, int containerId) {
-        toNMS(player).b.a(new PacketPlayOutCloseWindow(containerId));
+        try {
+            PlayerConnection playerConnection = (PlayerConnection) fieldEntityPlayerGetConnection.get(toNMS(player));
+            playerConnection.a(new PacketPlayOutCloseWindow(containerId));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
