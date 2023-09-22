@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.wesjd</groupId>
         <artifactId>anvilgui-parent</artifactId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>anvilgui</artifactId>
@@ -185,6 +185,12 @@
         	<groupId>net.wesjd</groupId>
         	<artifactId>anvilgui-reflection</artifactId>
         	<version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.wesjd</groupId>
+            <artifactId>anvilgui-1_20_R2</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
