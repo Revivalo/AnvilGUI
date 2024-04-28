@@ -2,7 +2,7 @@ package net.wesjd.anvilgui.version;
 
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
@@ -81,7 +81,7 @@ public final class WrapperPaper implements VersionWrapper {
 
     @Override
     public Object jsonChatComponent(String json) {
-        return Component.Serializer.fromJson(json, null);
+        return Component.Serializer.fromJson(json, RegistryAccess.EMPTY);
     }
 
     private static class AnvilContainer extends AnvilMenu implements AnvilContainerWrapper {
@@ -129,7 +129,7 @@ public final class WrapperPaper implements VersionWrapper {
             // If an item is present in the left input slot change its hover name to the literal text.
             Slot inputLeft = getSlot(0);
             if (inputLeft.hasItem()) {
-                inputLeft.getItem().set(DataComponents.CUSTOM_NAME, Component.literal("e"));
+                inputLeft.getItem().set(DataComponents.CUSTOM_NAME, Component.literal(text));
             }
         }
 
