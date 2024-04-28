@@ -1,6 +1,5 @@
 package net.wesjd.anvilgui.version;
 
-
 import org.bukkit.Bukkit;
 
 /**
@@ -18,22 +17,28 @@ public class VersionMatcher {
      * @throws IllegalStateException If the version wrapper failed to be instantiated or is unable to be found
      */
     public VersionWrapper match() {
-        final String serverVersion = Bukkit.getServer()
+        final String packageName = Bukkit.getServer()
                 .getClass()
                 .getPackage()
-                .getName()
-                .split("\\.")[3]
-                .substring(1);
+                .getName();
+
+        String wrapperName = "Paper";
+        if (packageName.contains(".v")) {
+            wrapperName = packageName
+                    .split("\\.")[3]
+                    .substring(1);
+        }
+
         try {
-            return (VersionWrapper) Class.forName(getClass().getPackage().getName() + ".Wrapper" + serverVersion)
+            return (VersionWrapper) Class.forName(getClass().getPackage().getName() + ".Wrapper" + wrapperName)
                     .getDeclaredConstructor()
                     .newInstance();
         } catch (ClassNotFoundException exception) {
             throw new IllegalStateException(
-                    "AnvilGUI does not support server version \"" + serverVersion + "\"", exception);
+                    "AnvilGUI does not support server version \"" + Bukkit.getServer().getBukkitVersion() + "\"", exception);
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException(
-                    "Failed to instantiate version wrapper for version " + serverVersion, exception);
+                    "Failed to instantiate version wrapper for version " + Bukkit.getServer().getBukkitVersion(), exception);
         }
     }
 }
