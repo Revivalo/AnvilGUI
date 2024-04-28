@@ -1,0 +1,90 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'idea'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+allprojects {
+    apply plugin: 'java-library'
+    group = 'net.wesjd'
+    version = '1.9.5-SNAPSHOT'
+
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+
+    tasks.build {
+        dependsOn("processResources")
+    }
+
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url = uri('https://repo.codemc.org/repository/nms/')
+        }
+        maven {
+            url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
+        }
+        maven {
+            url = uri('https://repo.papermc.io/repository/maven-public/')
+        }
+    }
+
+    publishing {
+        publications {
+            "$project.name"(MavenPublication) {
+                groupId project.group
+                artifactId project.name
+                version project.version
+                from components.java
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.encoding = 'UTF-8'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':api')
+    implementation project(':abstraction')
+    implementation project(':1_7_R4')
+    implementation project(':1_8_R1')
+    implementation project(':1_8_R2')
+    implementation project(':1_8_R3')
+    implementation project(':1_9_R1')
+    implementation project(':1_9_R2')
+    implementation project(':1_10_R1')
+    implementation project(':1_11_R1')
+    implementation project(':1_12_R1')
+    implementation project(':1_13_R1')
+    implementation project(':1_13_R2')
+    implementation project(':1_14_R1')
+    implementation project(':1_14_4_R1')
+    implementation project(':1_15_R1')
+    implementation project(':1_16_R1')
+    implementation project(':1_16_R2')
+    implementation project(':1_16_R3')
+    implementation project(':1_17_R1')
+    implementation project(':1_17_1_R1')
+    implementation project(':1_18_R1')
+    implementation project(':1_18_R2')
+    implementation project(':1_19_R1')
+    implementation project(':1_19_1_R1')
+    implementation project(':1_19_R2')
+    implementation project(':1_19_R3')
+    implementation project(':1_20_R1')
+    implementation project(':1_20_R2')
+    implementation project(':1_20_R3')
+    implementation project(':paper')
+}
+
+shadowJar {
+    archiveClassifier.set(null)
+    archiveBaseName.set('anvilgui')
+}
