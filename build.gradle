@@ -7,7 +7,11 @@ plugins {
 }
 
 subprojects {
-
+    // use java 8 for all modules by default
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 }
 
 allprojects {
@@ -15,8 +19,6 @@ allprojects {
     group = 'net.wesjd'
     version = '1.9.5-SNAPSHOT'
 
-    // use java 8 for all modules by default
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
     apply plugin: 'com.diffplug.spotless'
     spotless {
@@ -43,6 +45,7 @@ allprojects {
         }
     }
 
+    apply plugin: 'maven-publish'
     publishing {
         publications {
             "$project.name"(MavenPublication) {
@@ -62,7 +65,10 @@ allprojects {
 }
 
 // parent uses java 21
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
 // Java versions
 // api, abstraction   ^= java 8
@@ -90,19 +96,24 @@ dependencies {
     implementation project(':1_16_R1')
     implementation project(':1_16_R2')
     implementation project(':1_16_R3')
-    implementation project(':1_17_R1')  { java.toolchain.languageVersion = JavaLanguageVersion.of(16) }
-    implementation project(':1_17_1_R1'){ java.toolchain.languageVersion = JavaLanguageVersion.of(16) }
-    implementation project(':1_18_R1')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_18_R2')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_19_R1')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_19_1_R1'){ java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_19_R2')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_19_R3')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_20_R1')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_20_R2')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_20_R3')  { java.toolchain.languageVersion = JavaLanguageVersion.of(17) }
-    implementation project(':1_20_R4')  { java.toolchain.languageVersion = JavaLanguageVersion.of(21) }
-    implementation project(':paper')    { java.toolchain.languageVersion = JavaLanguageVersion.of(21) }
+    implementation project(':1_17_R1')
+    implementation project(':1_17_1_R1')
+    implementation project(':1_18_R1')
+    implementation project(':1_18_R2')
+    implementation project(':1_19_R1')
+    implementation project(':1_19_1_R1')
+    implementation project(':1_19_R2')
+    implementation project(':1_19_R3')
+    implementation project(':1_20_R1')
+    implementation project(':1_20_R2')
+    implementation project(':1_20_R3')
+    implementation project(':1_20_R4')
+    implementation project(':paper')
+}
+
+// suppress java 8 obsolete warnings
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-Xlint:-options'
 }
 
 shadowJar {
