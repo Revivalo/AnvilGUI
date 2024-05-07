@@ -17,16 +17,11 @@ public class VersionMatcher {
      * @throws IllegalStateException If the version wrapper failed to be instantiated or is unable to be found
      */
     public VersionWrapper match() {
-        final String packageName = Bukkit.getServer()
-                .getClass()
-                .getPackage()
-                .getName();
+        final String packageName = Bukkit.getServer().getClass().getPackage().getName();
 
         String wrapperName = "Paper";
         if (packageName.contains(".v")) {
-            wrapperName = packageName
-                    .split("\\.")[3]
-                    .substring(1);
+            wrapperName = packageName.split("\\.")[3].substring(1);
         }
 
         try {
@@ -35,10 +30,14 @@ public class VersionMatcher {
                     .newInstance();
         } catch (ClassNotFoundException exception) {
             throw new IllegalStateException(
-                    "AnvilGUI does not support server version \"" + Bukkit.getServer().getBukkitVersion() + "\"", exception);
+                    "AnvilGUI does not support server version \""
+                            + Bukkit.getServer().getBukkitVersion() + "\"",
+                    exception);
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException(
-                    "Failed to instantiate version wrapper for version " + Bukkit.getServer().getBukkitVersion(), exception);
+                    "Failed to instantiate version wrapper for version "
+                            + Bukkit.getServer().getBukkitVersion(),
+                    exception);
         }
     }
 }

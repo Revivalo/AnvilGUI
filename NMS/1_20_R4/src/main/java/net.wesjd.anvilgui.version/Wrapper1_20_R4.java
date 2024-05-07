@@ -1,6 +1,5 @@
 package net.wesjd.anvilgui.version;
 
-
 import net.minecraft.core.BlockPosition;
 import net.minecraft.core.IRegistryCustom;
 import net.minecraft.core.component.DataComponents;
@@ -131,7 +130,11 @@ public final class Wrapper1_20_R4 implements VersionWrapper {
             // If an item is present in the left input slot change its hover name to the literal text.
             Slot inputLeft = b(0);
             if (inputLeft.h()) {
-                inputLeft.g().b(DataComponents.g, IChatBaseComponent.b(text)); // DataComponents.g -> DataComponents.CUSTOM_NAME
+                inputLeft
+                        .g()
+                        .b(
+                                DataComponents.g,
+                                IChatBaseComponent.b(text)); // DataComponents.g -> DataComponents.CUSTOM_NAME
             }
         }
 

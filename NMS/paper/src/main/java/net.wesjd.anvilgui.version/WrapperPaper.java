@@ -1,6 +1,5 @@
 package net.wesjd.anvilgui.version;
 
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
@@ -25,13 +24,14 @@ public final class WrapperPaper implements VersionWrapper {
      * Turns a {@link Player} into an NMS one
      *     * @param player The player to be converted
      * @return the NMS EntityPlayer
-     */    private ServerPlayer toNMS(Player player) {
+     */
+    private ServerPlayer toNMS(Player player) {
         return ((CraftPlayer) player).getHandle();
     }
 
     @Override
     public int getNextContainerId(Player player, AnvilContainerWrapper container) {
-         return ((AnvilContainer) container).getContainerId();
+        return ((AnvilContainer) container).getContainerId();
     }
 
     @Override
