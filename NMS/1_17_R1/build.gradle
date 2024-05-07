@@ -1,6 +1,6 @@
 dependencies {
     compileOnly project(':abstraction')
-    compileOnly project(':1_17_1_R1')
+    compileOnly project(':NMS:1_17_1_R1')
 
     compileOnly 'org.spigotmc:spigot:1.17-R0.1-SNAPSHOT'
 }
